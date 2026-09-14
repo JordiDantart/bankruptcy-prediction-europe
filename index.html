@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bankruptcy Prediction in European Listed Equity Markets</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --navy: #1a2744;
+            --navy-light: #243357;
+            --blue: #2c5282;
+            --blue-light: #3a6ba8;
+            --accent: #c8102e;
+            --gray-100: #f7f8fa;
+            --gray-200: #eef0f4;
+            --gray-400: #9ba3b2;
+            --gray-600: #4a5568;
+            --gray-800: #1a202c;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--gray-800);
+            background: var(--white);
+            line-height: 1.6;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(26, 39, 68, 0.97);
+            backdrop-filter: blur(8px);
+            padding: 0 48px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-logo {
+            font-family: 'Playfair Display', serif;
+            color: var(--white);
+            font-size: 15px;
+            letter-spacing: 0.3px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: rgba(255,255,255,0.75);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--white);
+        }
+
+        .hero {
+            min-height: 100vh;
+            background: var(--navy);
+            display: flex;
+            align-items: center;
+            padding: 120px 48px 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(135deg, transparent 0%, rgba(44, 82, 130, 0.15) 100%);
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .hero-left {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .hero-tag {
+            display: inline-block;
+            background: rgba(200, 16, 46, 0.15);
+            border: 1px solid rgba(200, 16, 46, 0.3);
+            color: #e8697d;
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 6px 14px;
+            border-radius: 2px;
+            margin-bottom: 28px;
+            width: fit-content;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 42px;
+            font-weight: 600;
+            color: var(--white);
+            line-height: 1.2;
+            margin-bottom: 24px;
+            max-width: 520px;
+        }
+
+        .hero-subtitle {
+            color: rgba(255,255,255,0.6);
+            font-size: 15px;
+            font-weight: 300;
+            max-width: 460px;
+            margin-bottom: 40px;
+            line-height: 1.7;
+        }
+
+        .hero-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 40px;
+        }
+
+        .hero-meta span {
+            color: rgba(255,255,255,0.5);
+            font-size: 13px;
+        }
+
+        .hero-meta strong {
+            color: rgba(255,255,255,0.85);
+            font-weight: 500;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: var(--white);
+            padding: 12px 28px;
+            border: none;
+            border-radius: 3px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: #a50d26;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: rgba(255,255,255,0.75);
+            padding: 12px 28px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 3px;
+            font-size: 13px;
+            font-weight: 400;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            border-color: rgba(255,255,255,0.5);
+            color: var(--white);
+        }
+
+        .hero-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2px;
+            width: 100%;
+        }
+
+        .metric-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 32px 28px;
+            transition: background 0.2s;
+        }
+
+        .metric-card:hover {
+            background: rgba(255,255,255,0.08);
+        }
+
+        .metric-value {
+            font-family: 'Playfair Display', serif;
+            font-size: 48px;
+            font-weight: 600;
+            color: var(--white);
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .metric-value span {
+            font-size: 24px;
+            color: rgba(255,255,255,0.6);
+        }
+
+        .metric-label {
+            color: rgba(255,255,255,0.5);
+            font-size: 12px;
+            font-weight: 400;
+            line-height: 1.4;
+        }
+
+        .metric-highlight .metric-value {
+            color: #e8697d;
+        }
+
+        section {
+            padding: 96px 48px;
+        }
+
+        .section-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            margin-bottom: 56px;
+        }
+
+        .section-label {
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--blue);
+            margin-bottom: 12px;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--navy);
+            line-height: 1.2;
+        }
+
+        .abstract-section {
+            background: var(--gray-100);
+        }
+
+        .abstract-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 80px;
+            align-items: start;
+        }
+
+        .abstract-sidebar {
+            position: sticky;
+            top: 80px;
+        }
+
+        .abstract-sidebar h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            color: var(--navy);
+            margin-bottom: 16px;
+        }
+
+        .keywords {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 24px;
+        }
+
+        .keyword {
+            background: var(--gray-200);
+            color: var(--gray-600);
+            font-size: 11px;
+            padding: 5px 12px;
+            border-radius: 2px;
+            font-weight: 500;
+        }
+
+        .abstract-text p {
+            color: var(--gray-600);
+            font-size: 15px;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        footer {
+            background: var(--navy);
+            padding: 48px;
+            text-align: center;
+        }
+
+        .footer-name {
+            font-family: 'Playfair Display', serif;
+            color: var(--white);
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .footer-info {
+            color: rgba(255,255,255,0.4);
+            font-size: 13px;
+            margin-bottom: 24px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+        }
+
+        .footer-links a {
+            color: rgba(255,255,255,0.5);
+            text-decoration: none;
+            font-size: 13px;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--white);
+        }
+
+        .footer-divider {
+            width: 40px;
+            height: 1px;
+            background: rgba(255,255,255,0.1);
+            margin: 32px auto;
+        }
+
+        .footer-credit {
+            color: rgba(255,255,255,0.25);
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="nav-logo">Bankruptcy Prediction · Europe</div>
+        <ul class="nav-links">
+            <li><a href="#abstract">Abstract</a></li>
+            <li><a href="#results">Results</a></li>
+            <li><a href="#figures">Figures</a></li>
+            <li><a href="#download">Download</a></li>
+        </ul>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-grid">
+            <div class="hero-left">
+                <div class="hero-tag">Master's Thesis · UPF BSM · 2026</div>
+                <h1>Bankruptcy Prediction in European Listed Equity Markets</h1>
+                <p class="hero-subtitle">
+                    Replicating and adapting the machine learning framework of Lombardo et al. (2022)
+                    to the European market, with macroeconomic variables capturing cross-country heterogeneity.
+                </p>
+                <div class="hero-meta">
+                    <span><strong>Jordi Dantart Domènech</strong></span>
+                    <span>MSc in Finance and Banking · UPF Barcelona School of Management</span>
+                </div>
+                <div class="hero-buttons">
+                    <a href="#results" class="btn-primary">View Results</a>
+                    <a href="#download" class="btn-secondary">Download Paper</a>
+                </div>
+            </div>
+            <div class="hero-right">
+                <div class="metrics-grid">
+                    <div class="metric-card metric-highlight">
+                        <div class="metric-value">0.801</div>
+                        <div class="metric-label">Best AUC · Task T1<br>Random Forest WL=3</div>
+                    </div>
+                    <div class="metric-card metric-highlight">
+                        <div class="metric-value">0.811</div>
+                        <div class="metric-label">Best AUC · Task T2<br>Gradient Boosting LAW=3</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">9<span>/11</span></div>
+                        <div class="metric-label">Bankruptcies correctly<br>detected in test set</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">76</div>
+                        <div class="metric-label">Bankruptcy events<br>manually identified</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="abstract-section" id="abstract">
+        <div class="section-inner">
+            <div class="section-header">
+                <div class="section-label">Overview</div>
+                <h2 class="section-title">Abstract</h2>
+            </div>
+            <div class="abstract-content">
+                <div class="abstract-sidebar">
+                    <h3>Key Information</h3>
+                    <p style="color: #4a5568; font-size: 14px; margin-top: 8px;">
+                        <strong>Dataset:</strong> 4,408 European listed companies<br><br>
+                        <strong>Period:</strong> 2004–2024<br><br>
+                        <strong>Countries:</strong> UK, Sweden, France, Germany, Italy, Spain, Switzerland, Netherlands<br><br>
+                        <strong>Models:</strong> Random Forest, XGBoost, Gradient Boosting<br><br>
+                        <strong>Methodology:</strong> 100 iterations, 50/50 random balancing
+                    </p>
+                    <div class="keywords">
+                        <span class="keyword">Bankruptcy Prediction</span>
+                        <span class="keyword">Machine Learning</span>
+                        <span class="keyword">Random Forest</span>
+                        <span class="keyword">European Markets</span>
+                        <span class="keyword">Sovereign Debt</span>
+                        <span class="keyword">Financial Distress</span>
+                    </div>
+                </div>
+                <div class="abstract-text">
+                    <p>
+                        This paper replicates and adapts the bankruptcy prediction methodology proposed by Lombardo et al. (2022)
+                        to the European listed equity market, evaluating whether their machine learning framework maintains its
+                        predictive capacity in a substantially different institutional and macroeconomic context.
+                    </p>
+                    <p>
+                        We construct an original dataset comprising 4,408 listed companies across eight European countries with
+                        91,774 firm-year observations for the period 2004–2024, manually identifying 76 bankruptcy events through
+                        cross-referencing national insolvency registers. The model incorporates the 18 financial variables from
+                        Lombardo et al. (2022) augmented with four European-specific variables: interest expense, ESG score,
+                        GDP growth and sovereign debt-to-GDP ratio.
+                    </p>
+                    <p>
+                        Our best model, Random Forest with WL=3, achieves an AUC of 0.801 on the test set, detecting 9 out of
+                        11 real bankruptcies. Gradient Boosting with LAW=3 achieves an AUC of 0.811, demonstrating that the
+                        model can anticipate bankruptcies three years in advance. We find that macroeconomic variables,
+                        particularly sovereign debt-to-GDP and GDP growth, are consistently among the most predictive features
+                        in the best-performing models.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-name">Jordi Dantart Domènech</div>
+        <div class="footer-info">MSc in Finance and Banking · UPF Barcelona School of Management · 2026</div>
+        <div class="footer-links">
+            <a href="https://linkedin.com" target="_blank">LinkedIn</a>
+            <a href="#download">Research Paper</a>
+            <a href="mailto:tu@email.com">Contact</a>
+        </div>
+        <div class="footer-divider"></div>
+        <div class="footer-credit">Bankruptcy Prediction in European Listed Equity Markets · 2026</div>
+    </footer>
+
+</body>
+</html>
