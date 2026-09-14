@@ -458,18 +458,19 @@
                         predictive capacity in a substantially different institutional and macroeconomic context.
                     </p>
                     <p>
-                        We construct an original dataset comprising 4,408 listed companies across eight European countries with
-                        91,774 firm-year observations for the period 2004–2024, manually identifying 76 bankruptcy events through
-                        cross-referencing national insolvency registers. The model incorporates the 18 financial variables from
-                        Lombardo et al. (2022) augmented with four European-specific variables: interest expense, ESG score,
-                        GDP growth and sovereign debt-to-GDP ratio.
+                        An original dataset has been constructed comprising 4,408 listed companies across eight European countries 
+                        with 91,774 firm-year observations for the period 2004–2024. A total of 76 bankruptcy events were manually 
+                        identfied through cross-referencing national insolvency registers. The model incorporates the 18 financial 
+                        variables from Lombardo et al. (2022) augmented with four European-specific variables: interest expense, 
+                        ESG score, GDP growth and sovereign debt-to-GDP ratio.
                     </p>
                     <p>
-                        Our best model, Random Forest with WL=3, achieves an AUC of 0.801 on the test set, detecting 9 out of
-                        11 real bankruptcies. Gradient Boosting with LAW=3 achieves an AUC of 0.811, demonstrating that the
-                        model can anticipate bankruptcies three years in advance. We find that macroeconomic variables,
-                        particularly sovereign debt-to-GDP and GDP growth, are consistently among the most predictive features
-                        in the best-performing models.
+                        The best-performing model in default prediction is Random Forest with WL=3, achieving an AUC of 0.801 on 
+                        the test set and correctly detecting 9 out of 11 real bankruptcies. In survival probability prediction, 
+                        Gradient Boosting with LAW=3 achieves an AUC of 0.811, demonstrating that bankruptcies can be anticipated 
+                        three years in advance. Macroeconomic variables, particularly sovereign debt-to-GDP and GDP growth, are 
+                        consistently among the most predictive features in the best-performing models, confirming that 
+                        European-specific contextual variables add genuine predictive signal beyond the original financial ratios.
                     </p>
                 </div>
             </div>
