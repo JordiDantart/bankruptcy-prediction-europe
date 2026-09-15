@@ -528,6 +528,120 @@
             opacity: 1;
             transform: translateY(0);
         }
+        /* FIGURES */
+        .figure-block {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 4px;
+            padding: 40px;
+            margin-bottom: 40px;
+        }
+
+        .figure-header-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 32px;
+            gap: 24px;
+        }
+
+        .figure-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            color: var(--navy);
+            margin-bottom: 8px;
+        }
+
+        .figure-subtitle {
+            color: var(--gray-600);
+            font-size: 14px;
+            max-width: 560px;
+            line-height: 1.6;
+        }
+
+        .figure-note {
+            color: var(--gray-400);
+            font-size: 12px;
+            margin-top: 16px;
+            max-width: 680px;
+            line-height: 1.6;
+            font-style: italic;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            width: 100%;
+        }
+
+    /* FLIP CARD */
+        .flip-card {
+            perspective: 1200px;
+            height: 440px;
+            width: 100%;
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front,
+        .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+
+        .flip-card-back {
+            transform: rotateY(180deg);
+            background: var(--gray-100);
+            border-radius: 4px;
+            padding: 32px;
+            overflow-y: auto;
+        }
+
+    /* EXPLAIN CONTENT */
+        .explain-content {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            height: 100%;
+        }
+
+        .explain-block h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: 16px;
+            color: var(--navy);
+            margin-bottom: 8px;
+        }
+
+        .explain-block p {
+            color: var(--gray-600);
+            font-size: 14px;
+            line-height: 1.7;
+        }        
+
+    /* FADE IN ANIMATION */
+        .fade-in-section {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .fade-in-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
     </style>
 </head>
 <body>
@@ -883,87 +997,222 @@
             <div class="section-label">Visualisations</div>
             <h2 class="section-title">Figures</h2>
             <p style="color: #4a5568; font-size: 15px; margin-top: 16px; max-width: 600px;">
-                Interactive charts built from the model's output. Hover over data points for details.
+                Interactive charts built from the model's output. Toggle between the chart and its interpretation using the buttons on each panel.
             </p>
         </div>
 
         <!-- FIGURA 1: AUC POR WL -->
         <div class="figure-block fade-in-section">
-            <div class="figure-header">
-                <h3 class="figure-title">AUC by Window Length — Task T1</h3>
-                <p class="figure-subtitle">Mean AUC on validation set across 100 training iterations. The dashed line shows Lombardo et al. (2022) benchmark for the US market.</p>
+            <div class="figure-header-row">
+                <div>
+                    <h3 class="figure-title">AUC by Window Length — Task T1</h3>
+                    <p class="figure-subtitle">Mean AUC on validation set across 100 training iterations.</p>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button onclick="flipCard('wl', 'chart')" id="btn-wl-chart" class="tab-btn tab-btn-active">Chart</button>
+                    <button onclick="flipCard('wl', 'explain')" id="btn-wl-explain" class="tab-btn">Explain</button>
+                </div>
             </div>
-            <div class="chart-container">
-                <canvas id="chartWL"></canvas>
+            <div class="flip-card" id="flip-wl">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <div class="chart-container">
+                            <canvas id="chartWL"></canvas>
+                        </div>
+                    </div>
+                    <div class="flip-card-back">
+                        <div class="explain-content">
+                            <div class="explain-block">
+                                <h4>What is AUC?</h4>
+                                <p>AUC measures the model's ability to distinguish bankrupt from healthy firms. A value of 0.5 equals random guessing; 1.0 is perfect. An AUC of 0.757 means the model correctly ranks a bankrupt firm above a healthy firm in 75.7% of random pairwise comparisons.</p>
+                            </div>
+                            <div class="explain-block">
+                                <h4>Lombardo benchmark</h4>
+                                <p>The dashed line shows AUC=0.748, reported by Lombardo et al. (2022) for Random Forest WL=1 in the US market. It serves as an external reference point. Our model surpasses this benchmark from WL=4 onwards with Random Forest.</p>
+                            </div>
+                            <div class="explain-block">
+                                <h4>Interpretation</h4>
+                                <p>All three models improve as Window Length increases, confirming that incorporating more years of historical data helps capture gradual financial deterioration. Random Forest peaks at WL=4 (0.757), while Gradient Boosting continues improving through WL=5 (0.756).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <p class="figure-note">Window Length controls how many years of historical data are used per observation. Longer windows generally improve performance by capturing gradual deterioration trends.</p>
         </div>
 
         <!-- FIGURA 2: AUC POR LAW -->
         <div class="figure-block fade-in-section">
-            <div class="figure-header">
-                <h3 class="figure-title">AUC by Look-Ahead Window — Task T2</h3>
-                <p class="figure-subtitle">Mean AUC on validation set. LAW=3 consistently emerges as the optimal prediction horizon across all models.</p>
+            <div class="figure-header-row">
+                <div>
+                    <h3 class="figure-title">AUC by Look-Ahead Window — Task T2</h3>
+                    <p class="figure-subtitle">Mean AUC on validation set. LAW=5 excluded from test analysis.</p>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button onclick="flipCard('law', 'chart')" id="btn-law-chart" class="tab-btn tab-btn-active">Chart</button>
+                    <button onclick="flipCard('law', 'explain')" id="btn-law-explain" class="tab-btn">Explain</button>
+                </div>
             </div>
-            <div class="chart-container">
-                <canvas id="chartLAW"></canvas>
+            <div class="flip-card" id="flip-law">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <div class="chart-container">
+                            <canvas id="chartLAW"></canvas>
+                        </div>
+                    </div>
+                    <div class="flip-card-back">
+                        <div class="explain-content">
+                            <div class="explain-block">
+                                <h4>What is AUC?</h4>
+                                <p>AUC measures the model's ability to distinguish bankrupt from healthy firms across all possible decision thresholds. Values above 0.7 are generally considered good for bankruptcy prediction with heavily imbalanced datasets.</p>
+                            </div>
+                            <div class="explain-block">
+                                <h4>What is Look-Ahead Window?</h4>
+                                <p>LAW controls how many years in advance the model predicts bankruptcy. LAW=3 means the model uses data from year t to predict whether the firm will go bankrupt in year t+3, giving investors and creditors actionable lead time.</p>
+                            </div>
+                            <div class="explain-block">
+                                <h4>Interpretation</h4>
+                                <p>LAW=3 emerges as the optimal horizon across all models. XGBoost peaks sharply at LAW=3 then drops. Random Forest improves steadily. This suggests European bankruptcy signals are detectable and actionable 3 years in advance — consistent with Lombardo et al. (2022) for the US market.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <p class="figure-note">Look-Ahead Window controls how many years in advance the model predicts bankruptcy. LAW=3 results are excluded from test analysis as only 1 bankruptcy event appears in the test set for that configuration.</p>
         </div>
 
         <!-- FIGURA 3: VARIABLE IMPORTANCE -->
         <div class="figure-block fade-in-section">
-            <div class="figure-header">
-                <h3 class="figure-title">Variable Importance — Task T1 WL=1</h3>
-                <p class="figure-subtitle">Relative importance of each variable. Red bars indicate European-specific variables added in this study. Blue bars indicate the original 18 variables from Lombardo et al. (2022).</p>
-            </div>
-            <div style="display: flex; gap: 8px; margin-bottom: 24px;">
-                <button onclick="showImportance('rf')" id="btn-imp-rf" class="tab-btn tab-btn-active">Random Forest</button>
-                <button onclick="showImportance('xgb')" id="btn-imp-xgb" class="tab-btn">XGBoost</button>
-                <button onclick="showImportance('gb')" id="btn-imp-gb" class="tab-btn">Gradient Boosting</button>
-            </div>
-            <div class="chart-container" style="height: 600px;">
-                <canvas id="chartImportance"></canvas>
-            </div>
-            <div style="display: flex; gap: 24px; margin-top: 16px;">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <div style="width: 14px; height: 14px; background: #e8604c; border-radius: 2px;"></div>
-                    <span style="font-size: 12px; color: #4a5568;">European-specific variables</span>
+            <div class="figure-header-row">
+                <div>
+                    <h3 class="figure-title">Variable Importance — Task T1 WL=1</h3>
+                    <p class="figure-subtitle">Red: European-specific variables. Blue: Lombardo et al. (2022) variables.</p>
                 </div>
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <div style="width: 14px; height: 14px; background: #1f77b4; border-radius: 2px;"></div>
-                    <span style="font-size: 12px; color: #4a5568;">Lombardo et al. (2022) variables</span>
+                <div style="display: flex; gap: 8px;">
+                    <button onclick="flipCard('imp', 'chart')" id="btn-imp-chart" class="tab-btn tab-btn-active">Chart</button>
+                    <button onclick="flipCard('imp', 'explain')" id="btn-imp-explain" class="tab-btn">Explain</button>
+                </div>
+            </div>
+            <div class="flip-card" style="height: 700px;" id="flip-imp">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <div style="display: flex; gap: 8px; margin-bottom: 20px;">
+                            <button onclick="showImportance('rf')" id="btn-imp-rf" class="tab-btn tab-btn-active">Random Forest</button>
+                            <button onclick="showImportance('xgb')" id="btn-imp-xgb" class="tab-btn">XGBoost</button>
+                            <button onclick="showImportance('gb')" id="btn-imp-gb" class="tab-btn">Gradient Boosting</button>
+                        </div>
+                        <div class="chart-container" style="height: 580px;">
+                            <canvas id="chartImportance"></canvas>
+                        </div>
+                        <div style="display: flex; gap: 24px; margin-top: 16px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="width: 14px; height: 14px; background: #e8604c; border-radius: 2px;"></div>
+                                <span style="font-size: 12px; color: #4a5568;">European-specific variables</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="width: 14px; height: 14px; background: #1f77b4; border-radius: 2px;"></div>
+                                <span style="font-size: 12px; color: #4a5568;">Lombardo et al. (2022) variables</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flip-card-back">
+                        <div class="explain-content">
+                            <div class="explain-block">
+                                <h4>What is variable importance?</h4>
+                                <p>Measures how much each variable contributes to the model's predictions on average, calculated as the mean reduction in Gini impurity across all trees (Random Forest and Gradient Boosting) or mean gain (XGBoost).</p>
+                            </div>
+                            <div class="explain-block">
+                                <h4>Red vs blue</h4>
+                                <p>Red bars are the four European-specific variables added in this study: sovereign debt-to-GDP, GDP growth, interest expense and ESG score. Blue bars are the original 18 variables from Lombardo et al. (2022). The colour is consistent across all three model panels.</p>
+                            </div>
+                            <div class="explain-block">
+                                <h4>Interpretation</h4>
+                                <p>In Random Forest and Gradient Boosting, the two best-performing models, European macroeconomic variables consistently rank among the top predictors. Sovereign debt-to-GDP leads in Gradient Boosting (24.7%) and GDP growth ranks second in Random Forest (12.4%). XGBoost shows a different pattern where accounting variables dominate, with ESG score as the only European variable in the top three.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- FIGURA 4: ROC CURVE -->
         <div class="figure-block fade-in-section">
-            <div class="figure-header">
-                <h3 class="figure-title">ROC Curve — Random Forest WL=3</h3>
-                <p class="figure-subtitle">Test set (2020–2024). The diagonal dashed line represents a random classifier (AUC=0.500).</p>
+            <div class="figure-header-row">
+                <div>
+                    <h3 class="figure-title">ROC Curve — Random Forest WL=3</h3>
+                    <p class="figure-subtitle">Test set (2020–2024). AUC = 0.801.</p>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button onclick="flipCard('roc', 'chart')" id="btn-roc-chart" class="tab-btn tab-btn-active">Chart</button>
+                    <button onclick="flipCard('roc', 'explain')" id="btn-roc-explain" class="tab-btn">Explain</button>
+                </div>
             </div>
-            <div class="chart-container" style="max-width: 560px; margin: 0 auto;">
-                <canvas id="chartROC"></canvas>
+            <div class="flip-card" id="flip-roc">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <div class="chart-container" style="max-width: 560px; margin: 0 auto;">
+                            <canvas id="chartROC"></canvas>
+                        </div>
+                    </div>
+                    <div class="flip-card-back">
+                        <div class="explain-content">
+                            <div class="explain-block">
+                                <h4>What is the ROC curve?</h4>
+                                <p>The ROC curve shows the trade-off between detecting real bankruptcies (True Positive Rate / Recall) and generating false alarms (False Positive Rate) across all possible decision thresholds. Each point on the curve represents a different threshold setting.</p>
+                            </div>
+                            <div class="explain-block">
+                                <h4>The diagonal</h4>
+                                <p>The dashed diagonal represents a random classifier with AUC=0.500 — equivalent to flipping a coin. The further the curve bows towards the upper-left corner, the better the model's discriminatory power.</p>
+                            </div>
+                            <div class="explain-block">
+                                <h4>Interpretation</h4>
+                                <p>Random Forest WL=3 achieves AUC=0.801, correctly detecting 9 out of 11 real bankruptcies in the 2020–2024 test period (Recall=81.8%, Type II error=18.2%). The step shape reflects the small number of positive cases in the test set (11 bankruptcies), which is characteristic of highly imbalanced real-world datasets.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <p class="figure-note">AUC=0.801 means the model correctly ranks a bankrupt firm above a healthy firm in 80.1% of random pairwise comparisons. The model detects 9 out of 11 real bankruptcies in the test period (Recall=81.8%).</p>
         </div>
 
         <!-- FIGURA 5: BANKRUPTCY DISTRIBUTION -->
         <div class="figure-block fade-in-section">
-            <div class="figure-header">
-                <h3 class="figure-title">Bankruptcy Events by Year (2004–2024)</h3>
-                <p class="figure-subtitle">Distribution of the 76 manually identified bankruptcy events across the sample period.</p>
+            <div class="figure-header-row">
+                <div>
+                    <h3 class="figure-title">Bankruptcy Events by Year (2004–2024)</h3>
+                    <p class="figure-subtitle">Distribution of the 76 manually identified bankruptcy events.</p>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button onclick="flipCard('bk', 'chart')" id="btn-bk-chart" class="tab-btn tab-btn-active">Chart</button>
+                    <button onclick="flipCard('bk', 'explain')" id="btn-bk-explain" class="tab-btn">Explain</button>
+                </div>
             </div>
-            <div class="chart-container">
-                <canvas id="chartBankruptcy"></canvas>
+            <div class="flip-card" id="flip-bk">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <div class="chart-container">
+                            <canvas id="chartBankruptcy"></canvas>
+                        </div>
+                    </div>
+                    <div class="flip-card-back">
+                        <div class="explain-content">
+                            <div class="explain-block">
+                                <h4>What does this show?</h4>
+                                <p>The number of bankruptcy events identified per year across the 8 European markets studied (UK, Sweden, France, Germany, Italy, Spain, Switzerland and the Netherlands), covering the period 2004–2024.</p>
+                            </div>
+                            <div class="explain-block">
+                                <h4>Two peaks</h4>
+                                <p>2012 (9 events) corresponds to the peak of the European sovereign debt crisis, when countries like Spain, Italy and Portugal faced severe fiscal constraints and banking sector stress. 2018 (8 events) reflects the end of the post-crisis expansion cycle, when several overleveraged firms reached their limits.</p>
+                            </div>
+                            <div class="explain-block">
+                                <h4>Interpretation</h4>
+                                <p>The temporal clustering of bankruptcies around macroeconomic stress periods provides empirical justification for incorporating sovereign debt-to-GDP and GDP growth as predictive variables. A purely accounting-based model would miss this country-level systemic dimension of bankruptcy risk.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <p class="figure-note">Two pronounced clusters are visible: 2012–2013 (European sovereign debt crisis) and 2018–2019 (end of the post-crisis expansion). The low count in 2017 and 2020–2021 reflects periods of relative economic stability and COVID-19 government support measures respectively.</p>
         </div>
 
     </div>
 </section>
-
 <!-- DOWNLOAD -->
 <section id="download">
     <div class="section-inner">
@@ -1340,6 +1589,385 @@ new Chart(document.getElementById('chartBankruptcy'), {
     options: {
         responsive: true,
         maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                callbacks: {
+                    label: ctx => ` ${ctx.parsed.y} bankruptcy event${ctx.parsed.y !== 1 ? 's' : ''}`
+                }
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                max: 10,
+                ticks: { stepSize: 2 },
+                grid: { color: 'rgba(0,0,0,0.05)' }
+            },
+            x: { grid: { display: false } }
+        }
+    }
+});
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// ============================================
+// FADE IN ON SCROLL
+// ============================================
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, index) => {
+        if (entry.isIntersecting) {
+            setTimeout(() => {
+                entry.target.classList.add('visible');
+            }, index * 150);
+        }
+    });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.fade-in-section').forEach(el => observer.observe(el));
+
+// ============================================
+// FLIP CARD
+// ============================================
+function flipCard(id, side) {
+    const card = document.getElementById(`flip-${id}`);
+    const btnChart = document.getElementById(`btn-${id}-chart`);
+    const btnExplain = document.getElementById(`btn-${id}-explain`);
+
+    if (side === 'explain') {
+        card.classList.add('flipped');
+        btnChart.className = 'tab-btn';
+        btnExplain.className = 'tab-btn tab-btn-active';
+    } else {
+        card.classList.remove('flipped');
+        btnChart.className = 'tab-btn tab-btn-active';
+        btnExplain.className = 'tab-btn';
+    }
+}
+
+// ============================================
+// CHART DEFAULTS
+// ============================================
+Chart.defaults.font.family = 'Inter, sans-serif';
+Chart.defaults.font.size = 12;
+Chart.defaults.color = '#4a5568';
+
+const COLORS = {
+    rf: '#1f77b4',
+    xgb: '#e8604c',
+    gb: '#2ca02c',
+    lombardo_ref: '#333333'
+};
+
+// ============================================
+// FIGURA 1: AUC POR WL
+// ============================================
+new Chart(document.getElementById('chartWL'), {
+    type: 'line',
+    data: {
+        labels: ['WL=1', 'WL=2', 'WL=3', 'WL=4', 'WL=5'],
+        datasets: [
+            {
+                label: 'Random Forest',
+                data: [0.724, 0.731, 0.728, 0.757, 0.742],
+                borderColor: COLORS.rf,
+                backgroundColor: COLORS.rf,
+                pointStyle: 'circle',
+                pointRadius: 6,
+                pointHoverRadius: 8,
+                borderWidth: 2,
+                tension: 0
+            },
+            {
+                label: 'XGBoost',
+                data: [0.702, 0.711, 0.725, 0.752, 0.739],
+                borderColor: COLORS.xgb,
+                backgroundColor: COLORS.xgb,
+                pointStyle: 'rect',
+                pointRadius: 6,
+                pointHoverRadius: 8,
+                borderWidth: 2,
+                tension: 0
+            },
+            {
+                label: 'Gradient Boosting',
+                data: [0.716, 0.711, 0.707, 0.752, 0.756],
+                borderColor: COLORS.gb,
+                backgroundColor: COLORS.gb,
+                pointStyle: 'triangle',
+                pointRadius: 6,
+                pointHoverRadius: 8,
+                borderWidth: 2,
+                tension: 0
+            },
+            {
+                label: 'Lombardo et al. (2022) — US benchmark',
+                data: [0.748, 0.748, 0.748, 0.748, 0.748],
+                borderColor: COLORS.lombardo_ref,
+                backgroundColor: 'transparent',
+                borderDash: [6, 4],
+                pointRadius: 0,
+                borderWidth: 1.5,
+                tension: 0
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 1000, easing: 'easeInOutQuart' },
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+            legend: { position: 'top' },
+            tooltip: {
+                callbacks: {
+                    label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(3)}`
+                }
+            }
+        },
+        scales: {
+            y: {
+                min: 0.65,
+                max: 0.80,
+                ticks: { stepSize: 0.02 },
+                grid: { color: 'rgba(0,0,0,0.05)' }
+            },
+            x: { grid: { display: false } }
+        }
+    }
+});
+
+// ============================================
+// FIGURA 2: AUC POR LAW
+// ============================================
+new Chart(document.getElementById('chartLAW'), {
+    type: 'line',
+    data: {
+        labels: ['LAW=2', 'LAW=3', 'LAW=4', 'LAW=5'],
+        datasets: [
+            {
+                label: 'Random Forest',
+                data: [0.665, 0.680, 0.732, 0.734],
+                borderColor: COLORS.rf,
+                backgroundColor: COLORS.rf,
+                pointStyle: 'circle',
+                pointRadius: 6,
+                pointHoverRadius: 8,
+                borderWidth: 2,
+                tension: 0
+            },
+            {
+                label: 'XGBoost',
+                data: [0.657, 0.714, 0.710, 0.655],
+                borderColor: COLORS.xgb,
+                backgroundColor: COLORS.xgb,
+                pointStyle: 'rect',
+                pointRadius: 6,
+                pointHoverRadius: 8,
+                borderWidth: 2,
+                tension: 0
+            },
+            {
+                label: 'Gradient Boosting',
+                data: [0.680, 0.664, 0.673, 0.679],
+                borderColor: COLORS.gb,
+                backgroundColor: COLORS.gb,
+                pointStyle: 'triangle',
+                pointRadius: 6,
+                pointHoverRadius: 8,
+                borderWidth: 2,
+                tension: 0
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 1000, easing: 'easeInOutQuart' },
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+            legend: { position: 'top' },
+            tooltip: {
+                callbacks: {
+                    label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(3)}`
+                }
+            }
+        },
+        scales: {
+            y: {
+                min: 0.60,
+                max: 0.775,
+                ticks: { stepSize: 0.025 },
+                grid: { color: 'rgba(0,0,0,0.05)' }
+            },
+            x: { grid: { display: false } }
+        }
+    }
+});
+
+// ============================================
+// FIGURA 3: VARIABLE IMPORTANCE
+// ============================================
+const importanceData = {
+    rf: {
+        labels: ['Market Cap','GDP Growth','Sovereign Debt/GDP','Interest Expense','Net Income','Retained Earnings','EBIT','EBITDA','Total Liabilities','Current Liabilities','Total Assets','Long Term Debt','Total Receivables','Depreciation & Amort.','Operating Expenses','Total Revenue','Inventory','ESG Score','Gross Profit','Current Assets','Net Sales','Cost of Goods Sold'],
+        values: [0.200,0.124,0.104,0.096,0.080,0.054,0.051,0.035,0.033,0.028,0.027,0.022,0.016,0.016,0.015,0.014,0.012,0.011,0.010,0.009,0.008,0.007],
+        european: [false,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false]
+    },
+    xgb: {
+        labels: ['Net Income','ESG Score','Cost of Goods Sold','EBIT','Depreciation & Amort.','Total Revenue','Net Sales','Market Cap','Inventory','Total Assets','Interest Expense','Long Term Debt','Gross Profit','Sovereign Debt/GDP','EBITDA','Retained Earnings','GDP Growth','Total Liabilities','Current Liabilities','Total Receivables','Operating Expenses','Current Assets'],
+        values: [0.201,0.184,0.176,0.107,0.060,0.052,0.034,0.033,0.032,0.021,0.019,0.011,0.008,0.007,0.006,0.005,0.004,0.003,0.001,0.0005,0.0002,0.0001],
+        european: [false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,false,true,false,false,false,false,false]
+    },
+    gb: {
+        labels: ['Sovereign Debt/GDP','Interest Expense','Market Cap','Retained Earnings','Depreciation & Amort.','GDP Growth','Net Income','EBIT','Total Assets','Long Term Debt','ESG Score','Current Liabilities','Inventory','Gross Profit','Net Sales','Total Revenue','Total Liabilities','Current Assets','Operating Expenses','Total Receivables','Cost of Goods Sold','EBITDA'],
+        values: [0.247,0.183,0.163,0.159,0.053,0.032,0.027,0.024,0.019,0.018,0.017,0.010,0.008,0.007,0.006,0.005,0.004,0.004,0.003,0.003,0.002,0.002],
+        european: [true,true,false,false,false,true,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false]
+    }
+};
+
+let importanceChart = null;
+
+function buildImportanceChart(model) {
+    const d = importanceData[model];
+    const reversed = {
+        labels: [...d.labels].reverse(),
+        values: [...d.values].reverse(),
+        european: [...d.european].reverse()
+    };
+    const colors = reversed.european.map(e => e ? '#e8604c' : '#1f77b4');
+
+    if (importanceChart) importanceChart.destroy();
+
+    importanceChart = new Chart(document.getElementById('chartImportance'), {
+        type: 'bar',
+        data: {
+            labels: reversed.labels,
+            datasets: [{
+                data: reversed.values,
+                backgroundColor: colors,
+                borderWidth: 0,
+                barThickness: 16
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: { duration: 800, easing: 'easeInOutQuart' },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: ctx => ` Importance: ${(ctx.parsed.x * 100).toFixed(1)}%`
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: { color: 'rgba(0,0,0,0.05)' },
+                    ticks: { callback: val => (val * 100).toFixed(0) + '%' }
+                },
+                y: {
+                    grid: { display: false },
+                    ticks: { font: { size: 11 } }
+                }
+            }
+        }
+    });
+}
+
+function showImportance(model) {
+    ['rf','xgb','gb'].forEach(m => {
+        document.getElementById(`btn-imp-${m}`).className = 'tab-btn';
+    });
+    document.getElementById(`btn-imp-${model}`).className = 'tab-btn tab-btn-active';
+    buildImportanceChart(model);
+}
+
+buildImportanceChart('rf');
+
+// ============================================
+// FIGURA 4: ROC CURVE
+// ============================================
+const fpr = [0.00,0.00,0.02,0.02,0.05,0.05,0.11,0.11,0.14,0.14,0.18,0.18,0.23,0.23,0.45,0.45,0.64,0.64,0.86,0.86,1.00];
+const tpr = [0.00,0.18,0.18,0.27,0.27,0.36,0.36,0.45,0.45,0.55,0.55,0.64,0.64,0.73,0.73,0.82,0.82,0.91,0.91,1.00,1.00];
+
+new Chart(document.getElementById('chartROC'), {
+    type: 'line',
+    data: {
+        datasets: [
+            {
+                label: 'Random Forest WL=3 (AUC = 0.801)',
+                data: fpr.map((x, i) => ({ x, y: tpr[i] })),
+                borderColor: '#e8604c',
+                backgroundColor: 'transparent',
+                pointRadius: 0,
+                borderWidth: 2.5,
+                stepped: true
+            },
+            {
+                label: 'Random classifier (AUC = 0.500)',
+                data: [{x:0,y:0},{x:1,y:1}],
+                borderColor: '#888',
+                backgroundColor: 'transparent',
+                borderDash: [6,4],
+                pointRadius: 0,
+                borderWidth: 1.5
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 1000, easing: 'easeInOutQuart' },
+        plugins: {
+            legend: { position: 'top' },
+            tooltip: {
+                callbacks: {
+                    label: ctx => ` FPR: ${ctx.parsed.x.toFixed(2)}, TPR: ${ctx.parsed.y.toFixed(2)}`
+                }
+            }
+        },
+        scales: {
+            x: {
+                type: 'linear',
+                min: 0, max: 1,
+                title: { display: true, text: 'False Positive Rate (Type I Error)' },
+                grid: { color: 'rgba(0,0,0,0.05)' }
+            },
+            y: {
+                min: 0, max: 1,
+                title: { display: true, text: 'True Positive Rate (Recall)' },
+                grid: { color: 'rgba(0,0,0,0.05)' }
+            }
+        }
+    }
+});
+
+// ============================================
+// FIGURA 5: BANKRUPTCY DISTRIBUTION
+// ============================================
+const years = [2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024];
+const counts = [2,1,3,3,4,2,2,2,9,8,5,3,4,1,8,6,1,2,3,4,1];
+
+new Chart(document.getElementById('chartBankruptcy'), {
+    type: 'bar',
+    data: {
+        labels: years,
+        datasets: [{
+            label: 'Bankruptcy events',
+            data: counts,
+            backgroundColor: '#e8604c',
+            borderWidth: 0,
+            borderRadius: 2
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 1000, easing: 'easeInOutQuart' },
         plugins: {
             legend: { display: false },
             tooltip: {
