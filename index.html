@@ -775,6 +775,42 @@
             gap: 20px;
             z-index: 99;
         }
+        /* TOOLTIPS EN VERTICAL */
+        .result-cell::after {
+            position: fixed;
+            bottom: 20px;
+            left: 10px;
+            right: 10px;
+            transform: none;
+            width: auto;
+            white-space: normal;
+            word-wrap: break-word;
+            z-index: 1000;
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        /* FLIP CARD EN VERTICAL */
+        .flip-card {
+            min-height: 700px !important;
+        }
+
+        .flip-card-inner {
+            min-height: 700px !important;
+        }
+
+        .flip-card-front,
+        .flip-card-back {
+            min-height: 700px !important;
+            overflow-y: auto !important;
+        }
+
+    /* TABLA HIPÓTESIS EN VERTICAL */
+        .results-table {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            display: block;
+        }
     }
 /* TOOLTIP EN MÓVIL */
 @media (hover: none) {
