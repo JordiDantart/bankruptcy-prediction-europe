@@ -811,6 +811,11 @@
             -webkit-overflow-scrolling: touch;
             display: block;
         }
+        .flip-card-back {
+            overflow-y: scroll !important;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 40px;
+        }
     }
 /* TOOLTIP EN MÓVIL */
 @media (hover: none) {
@@ -1920,12 +1925,41 @@ new Chart(document.getElementById('chartBankruptcy'), {
 </script>
 <script>
 // Tooltip en móvil
-document.querySelectorAll('.result-cell').forEach(cell => {
-    cell.addEventListener('click', function() {
-        document.querySelectorAll('.result-cell').forEach(c => c.classList.remove('touched'));
-        this.classList.add('touched');
+if ('ontouchstart' in window) {
+    const mobileTooltip = document.createElement('div');
+    mobileTooltip.id = 'mobile-tooltip';
+    mobileTooltip.style.cssText = `
+        display: none;
+        position: fixed;
+        bottom: 20px;
+        left: 10px;
+        right: 10px;
+        background: #1a2744;
+        color: white;
+        font-size: 11px;
+        line-height: 1.5;
+        padding: 10px 14px;
+        border-radius: 4px;
+        z-index: 9999;
+        word-wrap: break-word;
+    `;
+    document.body.appendChild(mobileTooltip);
+
+    document.querySelectorAll('.result-cell').forEach(cell => {
+        cell.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const tooltip = this.getAttribute('data-tooltip');
+            if (tooltip) {
+                mobileTooltip.textContent = tooltip;
+                mobileTooltip.style.display = 'block';
+            }
+        });
     });
-});
+
+    document.addEventListener('click', function() {
+        mobileTooltip.style.display = 'none';
+    });
+}
 </script>
 <script>
 function toggleMenu() {
