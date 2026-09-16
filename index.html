@@ -604,6 +604,9 @@
         .btn-download:hover {
             background: var(--blue);
         }
+        .hamburger {
+            display: none;
+        }
     /* RESPONSIVE MÓVIL */
 @media (max-width: 768px) {
         html, body {
@@ -613,10 +616,6 @@
 
         nav {
             padding: 0 20px;
-        }
-
-        .nav-links {
-            display: none;
         }
 
         .hero {
@@ -731,8 +730,52 @@
         footer {
             padding: 40px 20px;
         }
-    }
+        /* TOOLTIP MÓVIL VERTICAL */
+        .result-cell::after {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(280px, 85vw);
+            z-index: 1000;
+        }
+    @media (max-width: 480px) {
+        .nav-links {
+            display: none;
+        }
 
+        .hamburger {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background: var(--white);
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+
+        .nav-links.open {
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 60px;
+            left: 0;
+            right: 0;
+            background: rgba(26, 39, 68, 0.97);
+            padding: 24px;
+            gap: 20px;
+            z-index: 99;
+        }
+    }
 /* TOOLTIP EN MÓVIL */
 @media (hover: none) {
         .result-cell.touched::after {
@@ -752,6 +795,11 @@
             <li><a href="#download">Download</a></li>
             <li><a href="#about">About me</a></li>
         </ul>
+        <button class="hamburger" onclick="toggleMenu()" id="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
     </nav>
 
     <section class="hero">
@@ -1840,6 +1888,18 @@ document.querySelectorAll('.result-cell').forEach(cell => {
     cell.addEventListener('click', function() {
         document.querySelectorAll('.result-cell').forEach(c => c.classList.remove('touched'));
         this.classList.add('touched');
+    });
+});
+</script>
+<script>
+function toggleMenu() {
+    const links = document.querySelector('.nav-links');
+    links.classList.toggle('open');
+}
+
+document.querySelectorAll('.nav-links a').forEach(link => {
+    link.addEventListener('click', () => {
+        document.querySelector('.nav-links').classList.remove('open');
     });
 });
 </script>
