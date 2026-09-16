@@ -605,7 +605,12 @@
             background: var(--blue);
         }
     /* RESPONSIVE MÓVIL */
-    @media (max-width: 768px) {
+@media (max-width: 768px) {
+        html, body {
+            overflow-x: hidden;
+            width: 100%;
+        }
+
         nav {
             padding: 0 20px;
         }
@@ -635,13 +640,20 @@
             padding: 60px 20px;
         }
 
+    /* ABSTRACT */
         .abstract-content {
             grid-template-columns: 1fr;
             gap: 40px;
         }
 
+        .abstract-sidebar {
+            position: static;
+        }
+
+    /* FIGURES */
         .figure-block {
-            padding: 24px;
+            padding: 20px;
+            overflow: hidden;
         }
 
         .figure-header-row {
@@ -649,44 +661,71 @@
             gap: 16px;
         }
 
+        .flip-card {
+            height: auto !important;
+            min-height: 500px;
+        }
+
+        .flip-card-inner {
+            height: auto;
+            min-height: 500px;
+        }
+
+        .flip-card-front,
+        .flip-card-back {
+            position: relative;
+            height: auto;
+            min-height: 500px;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+
+        .flip-card-back {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+        }
+
+        .chart-container {
+            height: 280px;
+        }
+
+    /* RESULTS TABLES */
         .results-table {
-            font-size: 12px;
+            font-size: 11px;
+            display: block;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .results-table th,
         .results-table td {
-            padding: 10px 8px;
+            padding: 8px 6px;
+            white-space: nowrap;
         }
-    
-        .flip-card {
-            height: auto;
-            min-height: 440px;
+
+    /* ABOUT ME */
+        .section-inner > div[style*="grid-template-columns: 2fr"] {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 32px !important;
         }
 
         .section-inner > div[style*="grid-template-columns: 1fr 1fr"] {
-            display: flex;
-            flex-direction: column;
-            gap: 32px;
-        }
-
-        .section-inner > div[style*="grid-template-columns: 2fr"] {
-            display: flex;
-            flex-direction: column;
-            gap: 32px;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 32px !important;
         }
 
         .section-inner > div[style*="grid-template-columns: 1fr 2fr"] {
-            display: flex;
-            flex-direction: column;
-            gap: 32px;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 32px !important;
         }
 
         .hero-buttons {
             flex-direction: column;
-        }
-
-        .chart-container {
-            height: 300px;
         }
 
         footer {
